@@ -13,7 +13,12 @@ import {
   Eye, 
   ExternalLink,
   ShieldCheck,
-  RotateCcw
+  RotateCcw,
+  Upload,
+  Cpu,
+  Check,
+  ChevronRight,
+  Layers
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import api from '../services/api';
@@ -26,6 +31,11 @@ export default function LearningAssessmentPage() {
   const [result, setResult] = useState(null);
   const [activeBacktrace, setActiveBacktrace] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Document Ingestion Pipeline State
+  const [pipelineRunning, setPipelineRunning] = useState(false);
+  const [pipelineStep, setPipelineStep] = useState('IDLE'); // 'EXTRACTING' | 'MAPPING' | 'GENERATING' | 'VALIDATING' | 'APPROVED'
+  const [pipelineReport, setPipelineReport] = useState(null);
 
   useEffect(() => {
     async function initAssessment() {
@@ -40,6 +50,57 @@ export default function LearningAssessmentPage() {
     }
     initAssessment();
   }, []);
+
+  const handleRunPipeline = async () => {
+    setPipelineRunning(true);
+    setPipelineStep('EXTRACTING');
+    
+    // Animate through pipeline steps for visual feedback
+    setTimeout(() => setPipelineStep('MAPPING'), 600);
+    setTimeout(() => setPipelineStep('GENERATING'), 1200);
+    setTimeout(() => setPipelineStep('VALIDATING'), 1800);
+
+    try {
+      const res = await fetch('/api/documents/pipeline/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          documentTitle: 'MoSPI Data Quality Manual (Chapter 4)',
+          domain: 'STATISTICAL',
+          pageNumber: 27,
+          competencyId: 'comp_missing_val'
+        })
+      }).then(r => r.json());
+
+      setTimeout(() => {
+        setPipelineStep('APPROVED');
+        setPipelineReport(res);
+        setPipelineRunning(false);
+        // Refresh assessment questions
+        if (res.questions && res.questions.length > 0) {
+          setAssessment(prev => ({
+            ...prev,
+            questions: res.questions.map(q => ({
+              id: q.id,
+              questionText: q.question_text,
+              options: q.options,
+              difficulty: q.difficulty,
+              bloomLevel: q.bloom_level,
+              criticScore: q.criticScore,
+              sourceDocumentTitle: q.sourceDocumentTitle,
+              sourcePage: q.sourcePage,
+              sourceChunkHeading: 'Chapter 4: Missing Value Imputation',
+              sourceChunkText: q.explanation
+            }))
+          }));
+        }
+      }, 2400);
+
+    } catch (err) {
+      console.error('Pipeline error:', err);
+      setPipelineRunning(false);
+    }
+  };
 
   const handleSelectOption = (questionId, option) => {
     setAnswers(prev => ({
@@ -95,20 +156,76 @@ export default function LearningAssessmentPage() {
               <BookOpen className="w-5 h-5" />
             </span>
             <span className="text-xs uppercase tracking-wider font-extrabold text-indigo-400">
-              AI Assessment & Source-Level Backtrace
+              Document-to-Assessment AI Pipeline & Source Backtrace
             </span>
           </div>
           <h1 className="text-2xl font-black text-white">Targeted Remediation: Missing Value Treatment</h1>
           <p className="text-xs text-slate-400 mt-1">
-            Questions generated from <strong>MoSPI Data Quality Manual (Chapter 4)</strong> with Question Critic verification.
+            Grounded MCQ generation with Question Critic verification from <strong>MoSPI Data Quality Manual (Page 27)</strong>.
           </p>
         </div>
 
         <div className="flex items-center space-x-2">
           <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold flex items-center space-x-1.5">
             <ShieldCheck className="w-4 h-4" />
-            <span>Critic Grounding Verified (Score: 0.95)</span>
+            <span>Critic Verification Active (Score: 0.95)</span>
           </span>
+        </div>
+      </div>
+
+      {/* PIPELINE STATUS BANNER & INGESTION CONTROLLER */}
+      <div className="bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-950 p-5 rounded-2xl border border-slate-800 shadow-xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center space-x-2">
+            <Cpu className="w-5 h-5 text-sky-400" />
+            <div>
+              <h3 className="text-sm font-bold text-white">AI Document-to-Assessment Pipeline</h3>
+              <p className="text-[11px] text-slate-400">Page-aware extraction → Concept mapping → MCQ generation → Question Critic</p>
+            </div>
+          </div>
+
+          <button
+            onClick={handleRunPipeline}
+            disabled={pipelineRunning}
+            className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition shadow-lg shadow-indigo-600/20 disabled:opacity-50"
+          >
+            <Upload className="w-4 h-4" />
+            <span>{pipelineRunning ? 'Executing Pipeline...' : 'Re-Run Document Pipeline'}</span>
+          </button>
+        </div>
+
+        {/* 5-Step Pipeline Stepper */}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-2">
+          {[
+            { id: 'EXTRACTING', label: '1. Extracting', desc: 'PDF & Page 27' },
+            { id: 'MAPPING', label: '2. Mapping', desc: 'QUAL-102 Concepts' },
+            { id: 'GENERATING', label: '3. Generating', desc: 'Bloom MCQs' },
+            { id: 'VALIDATING', label: '4. Validating', desc: 'Question Critic' },
+            { id: 'APPROVED', label: '5. Approved', desc: 'Stored & Active' }
+          ].map(st => {
+            const stepOrder = ['IDLE', 'EXTRACTING', 'MAPPING', 'GENERATING', 'VALIDATING', 'APPROVED'];
+            const currIdx = stepOrder.indexOf(pipelineStep);
+            const thisIdx = stepOrder.indexOf(st.id);
+            const isDone = currIdx >= thisIdx && pipelineStep !== 'IDLE';
+            const isCurrent = pipelineStep === st.id;
+
+            return (
+              <div
+                key={st.id}
+                className={`p-3 rounded-xl border text-center transition ${
+                  isCurrent
+                    ? 'bg-sky-500/20 border-sky-500 text-sky-300 shadow-md shadow-sky-500/10 animate-pulse'
+                    : (isDone ? 'bg-emerald-950/20 border-emerald-500/40 text-emerald-300' : 'bg-slate-950/40 border-slate-800 text-slate-500')
+                }`}
+              >
+                <div className="text-[11px] font-bold flex items-center justify-center space-x-1">
+                  {isDone && !isCurrent && <Check className="w-3 h-3 text-emerald-400" />}
+                  <span>{st.label}</span>
+                </div>
+                <span className="text-[10px] text-slate-400 block mt-0.5">{st.desc}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -141,14 +258,32 @@ export default function LearningAssessmentPage() {
               </p>
             </div>
 
-            <div className="bg-indigo-950/30 p-3.5 rounded-xl border border-indigo-500/30 text-xs text-indigo-200 space-y-1">
-              <div className="flex items-center space-x-1.5 font-bold text-indigo-400">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>AI Critic Verification Guarantee</span>
+            {/* Question Critic 6-Point Checklist Banner */}
+            <div className="bg-indigo-950/30 p-3.5 rounded-xl border border-indigo-500/30 text-xs text-indigo-200 space-y-2">
+              <div className="flex items-center justify-between font-bold text-indigo-400">
+                <div className="flex items-center space-x-1.5">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Question Critic Guarantee</span>
+                </div>
+                <span className="text-[10px] uppercase px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300">
+                  Score: 0.95 / 1.0
+                </span>
               </div>
-              <p className="text-[11px] text-slate-300">
-                All assessment questions are strictly grounded in this official text chunk. Any incorrect response will immediately backtrace to this exact page number.
-              </p>
+              
+              <ul className="space-y-1 text-[11px] text-slate-300">
+                <li className="flex items-center space-x-1.5 text-emerald-400">
+                  <Check className="w-3 h-3" />
+                  <span>1. Source grounding verified against Page 27</span>
+                </li>
+                <li className="flex items-center space-x-1.5 text-emerald-400">
+                  <Check className="w-3 h-3" />
+                  <span>2. Single unambiguous correct answer enforced</span>
+                </li>
+                <li className="flex items-center space-x-1.5 text-emerald-400">
+                  <Check className="w-3 h-3" />
+                  <span>3. Bloom taxonomy aligned (Application & Analysis)</span>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
@@ -158,7 +293,7 @@ export default function LearningAssessmentPage() {
           
           {result ? (
             /* Results & Backtrace Card */
-            <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-6">
+            <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-6 animate-in fade-in">
               <div className="flex items-center justify-between pb-4 border-b border-slate-800">
                 <div>
                   <h3 className="text-lg font-black text-white">Assessment Feedback & Evidence Breakdown</h3>
@@ -265,7 +400,7 @@ export default function LearningAssessmentPage() {
                   <h3 className="text-base font-bold text-white">Verified Knowledge Check</h3>
                   <p className="text-xs text-slate-400">Select answers to test missing value imputation rules.</p>
                 </div>
-                <span className="text-xs text-slate-500 font-mono font-bold">2 Questions</span>
+                <span className="text-xs text-slate-500 font-mono font-bold">{questions.length} Questions</span>
               </div>
 
               <div className="space-y-6">

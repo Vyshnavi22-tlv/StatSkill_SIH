@@ -11,6 +11,7 @@ router.get('/', (req, res) => {
     FROM documents d
     LEFT JOIN document_chunks dc ON d.id = dc.document_id
     GROUP BY d.id
+    ORDER BY d.uploaded_at DESC
   `).all();
   res.json(docs);
 });
@@ -18,7 +19,7 @@ router.get('/', (req, res) => {
 // Get chunks for a document
 router.get('/:id/chunks', (req, res) => {
   const chunks = db.prepare(`
-    SELECT dc.*, c.name as competency_name 
+    SELECT dc.*, c.name as competency_name, c.code as competency_code
     FROM document_chunks dc
     LEFT JOIN competencies c ON dc.competency_id = c.id
     WHERE dc.document_id = ?
@@ -27,18 +28,28 @@ router.get('/:id/chunks', (req, res) => {
   res.json(chunks);
 });
 
-// Trigger AI Question Generation on a chunk with critic validation
-router.post('/chunks/:chunkId/generate-questions', (req, res) => {
+// Run the Document-to-Assessment AI Pipeline
+router.post('/pipeline/run', (req, res) => {
   try {
-    const { competencyId } = req.body;
-    const questions = AiAssessmentEngine.generateQuestionsForChunk(req.params.chunkId, competencyId);
-    res.json({
-      success: true,
-      count: questions.length,
-      questions
+    const { 
+      documentTitle = 'MoSPI Data Quality Manual (Chapter 4)',
+      domain = 'STATISTICAL',
+      pageNumber = 27,
+      rawText = `Section 4.2 Hot-Deck vs Cold-Deck Imputation: When a specific commodity price quote is missing in the current month's survey round, hot-deck donor matching within the same stratum and urban/rural market cluster is the mandatory standard under MoSPI guidelines. Cold-deck imputation (using historical static baseline datasets) is strictly discouraged during volatile inflation periods because it creates lagged underestimation. In hot-deck imputation, the donor quotation must be drawn from an active responding unit sharing identical item specifications and outlet grade.`,
+      competencyId = 'comp_missing_val'
+    } = req.body;
+
+    const result = AiAssessmentEngine.runDocumentAssessmentPipeline({
+      documentTitle,
+      domain,
+      pageNumber,
+      rawText,
+      competencyId
     });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
