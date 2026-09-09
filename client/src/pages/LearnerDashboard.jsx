@@ -15,7 +15,10 @@ import {
   ExternalLink,
   ChevronRight,
   Layers,
-  BarChart2
+  BarChart2,
+  Clock,
+  ShieldCheck,
+  AlertTriangle
 } from 'lucide-react';
 import api from '../services/api';
 
@@ -72,18 +75,6 @@ export default function LearnerDashboard() {
     description: 'Study Chapter 4 of MoSPI Data Quality Manual and pass the AI assessment.',
     user_progress: 25,
     xp_reward: 150
-  };
-
-  // Top Recommendation
-  const topRec = recommendations[0] || {
-    title: 'iGOT Karmayogi: Data Quality Assurance & Missing Value Imputation',
-    provider: 'iGOT Karmayogi',
-    reasons: [
-      'Role requires Data Quality (Target: 75%)',
-      'Root prerequisite gap detected in Missing Value Treatment (Mastery: 35%)',
-      'Resolving this unblocks Data Quality and Price Index Validation'
-    ],
-    expected_outcome: 'Expected to boost Missing Value Treatment mastery to 85%'
   };
 
   // 6 Competency Snapshot Cards
@@ -252,15 +243,15 @@ export default function LearnerDashboard() {
 
       </div>
 
-      {/* 4. ROOT GAP & RECOMMENDED ACTION SECTION */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* 4. ROOT GAP CARD & ADAPTER STATUS */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* ROOT GAP CARD */}
-        <div className="bg-gradient-to-br from-red-950/40 via-slate-900 to-slate-950 p-6 rounded-2xl border border-red-500/40 shadow-xl space-y-4 root-gap-glow">
+        <div className="lg:col-span-2 bg-gradient-to-br from-red-950/40 via-slate-900 to-slate-950 p-6 rounded-2xl border border-red-500/40 shadow-xl space-y-4 root-gap-glow">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 text-red-400 font-black text-xs uppercase tracking-wider">
               <ShieldAlert className="w-4 h-4 animate-pulse" />
-              <span>Your Biggest Root Gap</span>
+              <span>Your Biggest Root Prerequisite Gap</span>
             </div>
             <span className="text-xs font-extrabold px-2.5 py-0.5 rounded bg-red-500/20 text-red-300 border border-red-500/30">
               35% Mastery
@@ -292,48 +283,164 @@ export default function LearnerDashboard() {
           </button>
         </div>
 
-        {/* RECOMMENDED ACTION CARD */}
-        <div className="bg-gradient-to-br from-sky-950/40 via-slate-900 to-slate-950 p-6 rounded-2xl border border-sky-500/40 shadow-xl space-y-4 flex flex-col justify-between">
+        {/* PROVIDER ADAPTER STATUS CARD */}
+        <div className="bg-slate-900/90 border border-slate-800 p-6 rounded-2xl shadow-xl flex flex-col justify-between space-y-4">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2 text-sky-400 font-black text-xs uppercase tracking-wider">
-                <Sparkles className="w-4 h-4" />
-                <span>Recommended Action</span>
+              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Integration Adapters</span>
+              <span className="px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 text-[10px] font-extrabold border border-sky-500/20">
+                Mock Mode Active
+              </span>
+            </div>
+            
+            <h3 className="text-sm font-bold text-white">Ecosystem Providers Connected</h3>
+            <p className="text-xs text-slate-400">
+              Clean mock integration adapters for Government of India learning ecosystems:
+            </p>
+
+            <div className="space-y-2 text-xs">
+              <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <span className="font-bold text-slate-200">iGOT Karmayogi Adapter</span>
+                </div>
+                <span className="text-[10px] text-slate-500 font-mono">Mock Registry</span>
               </div>
-              <span className="text-xs font-bold text-slate-400">{topRec.provider}</span>
-            </div>
 
-            <div>
-              <h3 className="text-base font-bold text-white leading-tight">{topRec.title}</h3>
-              <p className="text-xs text-emerald-400 font-medium mt-1">{topRec.expected_outcome}</p>
-            </div>
-
-            {/* Why it is recommended */}
-            <div className="bg-slate-950/70 p-3.5 rounded-xl border border-sky-900/40 space-y-2">
-              <span className="text-[10px] uppercase font-extrabold text-slate-400 tracking-wider block">Why Recommended</span>
-              <ul className="space-y-1 text-xs text-slate-300">
-                {(topRec.reasons || []).map((r, i) => (
-                  <li key={i} className="flex items-start space-x-1.5">
-                    <span className="text-sky-400 mt-0.5">•</span>
-                    <span>{r}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <span className="font-bold text-slate-200">NSSTA Academy Adapter</span>
+                </div>
+                <span className="text-[10px] text-slate-500 font-mono">Classroom Sync</span>
+              </div>
             </div>
           </div>
 
-          <button
-            onClick={() => navigate('/learning')}
-            className="w-full flex items-center justify-center space-x-2 py-2.5 px-4 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold transition shadow-lg shadow-sky-600/20"
-          >
-            <span>Start Recommended Learning</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
+          <p className="text-[10px] text-slate-500 italic">
+            *Production iGOT and NSSTA API integration will plug into these provider adapter interfaces.
+          </p>
         </div>
 
       </div>
 
-      {/* 5. COMPETENCY SNAPSHOT (4-6 CARDS) */}
+      {/* 5. RECOMMENDED FOR YOU (INTERVENTION CARDS) */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Sparkles className="w-5 h-5 text-sky-400" />
+            <div>
+              <h2 className="text-lg font-bold text-white">Recommended For You</h2>
+              <p className="text-xs text-slate-400">Personalized interventions prioritized by root-cause prerequisite diagnosis</p>
+            </div>
+          </div>
+          <span className="text-xs font-bold text-slate-400">{recommendations.length} recommendations</span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {recommendations.map(rec => {
+            const isHigh = rec.priority === 'HIGH';
+            const isRootAction = rec.prerequisiteStatus === 'ROOT_GAP_INTERVENTION';
+
+            return (
+              <div
+                key={rec.id}
+                className={`p-5 rounded-2xl border flex flex-col justify-between space-y-4 transition ${
+                  isRootAction
+                    ? 'bg-gradient-to-b from-slate-900 to-slate-950 border-red-500/40 shadow-xl shadow-red-500/5'
+                    : 'bg-slate-900/90 border-slate-800 shadow-xl hover:border-slate-700'
+                }`}
+              >
+                <div className="space-y-3">
+                  {/* Top Bar: Provider & Priority */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] uppercase font-extrabold px-2.5 py-0.5 rounded bg-sky-500/15 text-sky-400 border border-sky-500/30">
+                      {rec.provider}
+                    </span>
+                    <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded border ${
+                      isHigh ? 'bg-red-500/20 text-red-300 border-red-500/30' : 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                    }`}>
+                      {rec.priority} Priority
+                    </span>
+                  </div>
+
+                  {/* Course Title */}
+                  <h3 className="text-sm font-bold text-white leading-snug min-h-[38px]">
+                    {rec.courseTitle}
+                  </h3>
+
+                  {/* Metrics Pills */}
+                  <div className="grid grid-cols-2 gap-2 text-xs bg-slate-950/80 p-2.5 rounded-xl border border-slate-800/80">
+                    <div>
+                      <span className="text-slate-500 text-[10px] block">Target Competency</span>
+                      <span className="font-bold text-slate-200 truncate block">{rec.targetCompetencyName}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 text-[10px] block">Current Mastery</span>
+                      <span className={`font-black ${rec.currentMastery < 60 ? 'text-red-400' : 'text-amber-400'}`}>
+                        {rec.currentMastery}% <span className="text-slate-500 text-[10px]">/ {rec.requiredMastery}%</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Why this course? Explanation Box */}
+                  <div className="bg-slate-950/50 p-3 rounded-xl border border-slate-800/60 space-y-1.5">
+                    <span className="text-[10px] uppercase font-extrabold text-slate-400 tracking-wider block">
+                      Why this course?
+                    </span>
+                    <ul className="space-y-1 text-[11px] text-slate-300">
+                      {(rec.explanation || []).map((exp, idx) => (
+                        <li key={idx} className="flex items-start space-x-1.5 leading-relaxed">
+                          <span className="text-sky-400 mt-0.5">•</span>
+                          <span>{exp}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Prerequisite Status Label */}
+                  <div className="flex items-center space-x-1.5 text-xs text-slate-400 pt-1">
+                    {isRootAction ? (
+                      <>
+                        <ShieldAlert className="w-3.5 h-3.5 text-red-400" />
+                        <span className="text-red-300 font-semibold text-[11px]">{rec.prerequisiteStatusLabel}</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="text-emerald-300 font-semibold text-[11px]">{rec.prerequisiteStatusLabel}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="pt-2 flex items-center space-x-2 border-t border-slate-800">
+                  <button
+                    onClick={() => navigate('/learning')}
+                    className="flex-1 flex items-center justify-center space-x-1.5 py-2 px-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold transition shadow-lg shadow-sky-600/20"
+                  >
+                    <BookOpen className="w-3.5 h-3.5" />
+                    <span>Study & Verify Assessment</span>
+                  </button>
+                  <a
+                    href={rec.courseUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition"
+                    title={`Open ${rec.provider} (Mock)`}
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                </div>
+
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 6. COMPETENCY SNAPSHOT (4-6 CARDS) */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
@@ -393,7 +500,7 @@ export default function LearnerDashboard() {
         </div>
       </div>
 
-      {/* 6. RECENT ACHIEVEMENTS & BADGES SHELF */}
+      {/* 7. RECENT ACHIEVEMENTS & BADGES SHELF */}
       <div className="bg-slate-900/90 p-6 rounded-2xl border border-slate-800 shadow-xl space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -409,7 +516,7 @@ export default function LearnerDashboard() {
           </button>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {(gamification?.allBadges || []).map(badge => {
             const isUnlocked = gamification?.unlockedBadges?.some(ub => ub.id === badge.id);
             return (
