@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', sans-serif;
+  }
+  code, pre {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+/* Custom glow effects & pulsing animations */
+@keyframes pulseGlowRed {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.4), inset 0 0 10px rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.9);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(239, 68, 68, 0.8), inset 0 0 15px rgba(239, 68, 68, 0.4);
+    border-color: rgba(248, 113, 113, 1);
+  }
+}
+
+@keyframes pulseGlowAmber {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+  }
+}
+
+.root-gap-glow {
+  animation: pulseGlowRed 2s infinite ease-in-out;
+}
+
+.at-risk-glow {
+  animation: pulseGlowAmber 2.5s infinite ease-in-out;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}

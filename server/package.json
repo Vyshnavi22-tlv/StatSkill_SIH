@@ -1,0 +1,19 @@
+{
+  "name": "statskill-server",
+  "version": "1.0.0",
+  "description": "StatSkill AI Backend Engine & Database",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node db/seed.js",
+    "test": "node test/db.test.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
