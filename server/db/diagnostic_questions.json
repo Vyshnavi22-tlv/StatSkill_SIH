@@ -1,0 +1,187 @@
+[
+  {
+    "id": "q_diag_prob_1",
+    "text": "In simple random sampling without replacement (SRSWOR) from a finite population of size N with sample size n, what is the first-order inclusion probability (π_i) for any specific population unit?",
+    "options": ["n / N", "1 / N", "n / (N - 1)", "(N - n) / N"],
+    "correct": "n / N",
+    "explanation": "Under SRSWOR, every unit in the sampling frame has an equal inclusion probability of n / N.",
+    "comp_id": "comp_prob_fund",
+    "diff": "MEDIUM",
+    "bloom": "UNDERSTAND"
+  },
+  {
+    "id": "q_diag_prob_2",
+    "text": "If random variable X denotes the price of rice in a district and Var(X) = σ², what is the variance of the sample mean price (X̄) under simple random sampling from a large population?",
+    "options": ["σ² / n", "σ² / √n", "n · σ²", "σ² / (n - 1)"],
+    "correct": "σ² / n",
+    "explanation": "The variance of the sample mean estimator for independent random observations is Var(X̄) = σ² / n.",
+    "comp_id": "comp_prob_fund",
+    "diff": "HARD",
+    "bloom": "APPLY"
+  },
+  {
+    "id": "q_diag_samp_1",
+    "text": "In stratified sampling, what allocation formula determines stratum sample size n_h proportional to both stratum size N_h and stratum standard deviation S_h (Neyman Allocation)?",
+    "options": [
+      "n_h = n · (N_h · S_h) / Σ(N_i · S_i)",
+      "n_h = n · (N_h / N)",
+      "n_h = n / H (Equal allocation)",
+      "n_h = n · (S_h / Σ S_i)"
+    ],
+    "correct": "n_h = n · (N_h · S_h) / Σ(N_i · S_i)",
+    "explanation": "Neyman optimum allocation minimizes sample estimator variance for a fixed sample size n by weighting by N_h * S_h.",
+    "comp_id": "comp_sampling",
+    "diff": "HARD",
+    "bloom": "ANALYZE"
+  },
+  {
+    "id": "q_diag_samp_2",
+    "text": "When cluster sampling is used in official price surveys across urban centers, the Design Effect (Deff) increases when:",
+    "options": [
+      "Intraclass correlation (ρ) within clusters is positive and cluster size is large",
+      "Units within clusters are perfectly heterogeneous",
+      "Sample size n is reduced to 1",
+      "Stratum weights sum to zero"
+    ],
+    "correct": "Intraclass correlation (ρ) within clusters is positive and cluster size is large",
+    "explanation": "Deff = 1 + (m - 1)ρ. When units within a cluster have similar price dynamics (ρ > 0), clustering increases sampling variance relative to SRS.",
+    "comp_id": "comp_sampling",
+    "diff": "HARD",
+    "bloom": "EVALUATE"
+  },
+  {
+    "id": "q_diag_samp_3",
+    "text": "In multi-stage sampling for Consumer Price Index collection, what typically constitutes the Primary Sampling Unit (PSU)?",
+    "options": [
+      "Urban Frame Survey (UFS) blocks or rural villages",
+      "Individual retail outlets selling kerosene",
+      "Single commodity price quotes",
+      "Household consumer expenditure receipts"
+    ],
+    "correct": "Urban Frame Survey (UFS) blocks or rural villages",
+    "explanation": "In MoSPI surveys, UFS blocks (urban) and Census villages (rural) serve as First Stage / Primary Sampling Units (PSUs).",
+    "comp_id": "comp_prob_samp",
+    "diff": "MEDIUM",
+    "bloom": "REMEMBER"
+  },
+  {
+    "id": "q_diag_dq_1",
+    "text": "Under MoSPI Data Quality standards, what is the mandatory action when a field price quote exceeds 2.5 times the historical median without supporting documentary market evidence?",
+    "options": [
+      "Flag as an unverified anomaly and escalate to regional supervisory officer",
+      "Silently delete the record from the database",
+      "Automatically replace with 0",
+      "Publish as an official verified outlier"
+    ],
+    "correct": "Flag as an unverified anomaly and escalate to regional supervisory officer",
+    "explanation": "MoSPI validation rules mandate escalation and supervisor sign-off for quotes deviating beyond 2.5x median.",
+    "comp_id": "comp_data_val",
+    "diff": "MEDIUM",
+    "bloom": "APPLICATION"
+  },
+  {
+    "id": "q_diag_dq_2",
+    "text": "During monthly CPI compilation, if an item quote is missing for a single survey round, which imputation method is required under MoSPI Data Quality guidelines?",
+    "options": [
+      "Hot-deck donor matching within the same stratum and market cluster",
+      "Cold-deck imputation from 10-year-old baseline census files",
+      "Zero-filling the expenditure weight in Laspeyres formula",
+      "Complete exclusion of the entire commodity category"
+    ],
+    "correct": "Hot-deck donor matching within the same stratum and market cluster",
+    "explanation": "MoSPI guidelines (Chapter 4) require hot-deck donor matching from an active responding unit in the same stratum to preserve price distribution variance.",
+    "comp_id": "comp_missing_val",
+    "diff": "HARD",
+    "bloom": "APPLY"
+  },
+  {
+    "id": "q_diag_dq_3",
+    "text": "What statistical treatment is recommended for verified temporary price quote spikes (e.g. transient supply shocks) before aggregate Laspeyres index computation?",
+    "options": [
+      "95% Winsorization to cap extreme tail distortions",
+      "Multiplying the entire state price vector by -1",
+      "Log-transforming the base year quantity weights",
+      "Omitting all food and beverage sub-groups"
+    ],
+    "correct": "95% Winsorization to cap extreme tail distortions",
+    "explanation": "Winsorization replaces extreme upper-tail observations with the 95th percentile value to prevent index distortion from temporary shocks.",
+    "comp_id": "comp_data_qual",
+    "diff": "HARD",
+    "bloom": "ANALYZE"
+  },
+  {
+    "id": "q_diag_price_1",
+    "text": "Which index formula is mathematically defined as the base-period weighted arithmetic average of price relatives: I = Σ(p_t · q_0) / Σ(p_0 · q_0)?",
+    "options": [
+      "Laspeyres Price Index",
+      "Paasche Price Index",
+      "Fisher Ideal Index",
+      "Törnqvist Index"
+    ],
+    "correct": "Laspeyres Price Index",
+    "explanation": "The Laspeyres formula uses base-period quantities (q_0) as constant weights across all comparison periods.",
+    "comp_id": "comp_index_num",
+    "diff": "MEDIUM",
+    "bloom": "REMEMBER"
+  },
+  {
+    "id": "q_diag_price_2",
+    "text": "Why does the Fisher Ideal Index satisfy both the Time Reversal Test and the Factor Reversal Test while Laspeyres does not?",
+    "options": [
+      "It is the geometric mean of Laspeyres and Paasche index numbers",
+      "It completely eliminates the need for price quotations",
+      "It uses equal arithmetic weights for all 300 commodities",
+      "It relies exclusively on chain-linking without base periods"
+    ],
+    "correct": "It is the geometric mean of Laspeyres and Paasche index numbers",
+    "explanation": "Fisher's index I_F = √(I_L · I_P) provides axiomatic symmetry satisfying both Time and Factor reversal tests.",
+    "comp_id": "comp_index_num",
+    "diff": "HARD",
+    "bloom": "UNDERSTAND"
+  },
+  {
+    "id": "q_diag_price_3",
+    "text": "When a specified commodity in the CPI basket disappears permanently from retail outlets, what is the standard MoSPI procedure?",
+    "options": [
+      "Item substitution with quality adjustment (overlap or hedonics)",
+      "Drop the entire sub-index from national headline inflation",
+      "Assume the price remained at 0 forever",
+      "Re-base the entire national CPI index immediately that month"
+    ],
+    "correct": "Item substitution with quality adjustment (overlap or hedonics)",
+    "explanation": "When an item is discontinued, a close substitute is selected with appropriate quality adjustment using overlap pricing or hedonic methods.",
+    "comp_id": "comp_cpi",
+    "diff": "MEDIUM",
+    "bloom": "APPLY"
+  },
+  {
+    "id": "q_diag_comp_1",
+    "text": "In Python price analytics, what is the most efficient vectorized pandas operation to compute state-level weighted average prices from micro-quotes with survey weights?",
+    "options": [
+      "df.groupby('state').apply(lambda g: np.average(g['price'], weights=g['weight']))",
+      "A nested Python while-loop appending to native Python lists",
+      "Calling os.system('calc.exe') for every line in the CSV",
+      "eval() with raw SQL string formatting inside a dictionary"
+    ],
+    "correct": "df.groupby('state').apply(lambda g: np.average(g['price'], weights=g['weight']))",
+    "explanation": "Vectorized groupby and weighted averaging in numpy/pandas avoids iterative bytecode interpretation overhead.",
+    "comp_id": "comp_stat_comp",
+    "diff": "EASY",
+    "bloom": "APPLY"
+  },
+  {
+    "id": "q_diag_comp_2",
+    "text": "When publishing state-wise inflation comparisons across 36 States & UTs for MoSPI bulletins, which visualization best avoids visual distortion?",
+    "options": [
+      "Rank-sorted horizontal bar chart paired with a thematic choropleth map",
+      "Exploded 3D pie chart with 36 multi-colored slices",
+      "Dual non-aligned radial charts with overlapping gradients",
+      "A stacked 100% area chart without legend"
+    ],
+    "correct": "Rank-sorted horizontal bar chart paired with a thematic choropleth map",
+    "explanation": "Sorted horizontal bar charts facilitate accurate length decoding while choropleth maps represent geographic variation without 3D perspective distortion.",
+    "comp_id": "comp_data_viz",
+    "diff": "EASY",
+    "bloom": "EVALUATE"
+  }
+]

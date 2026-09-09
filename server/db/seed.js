@@ -1,4 +1,10 @@
 import db, { initializeDatabase } from './database.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export function seedDatabase() {
   console.log('Initializing database schema...');
@@ -96,7 +102,6 @@ export function seedDatabase() {
 
   // 3. Prerequisite Edges in the Competency Graph
   const edges = [
-    // Sampling prerequisite chain
     { id: 'edge_1', src: 'comp_prob_fund', tgt: 'comp_prob_samp', rel: 'PREREQUISITE' },
     { id: 'edge_2', src: 'comp_prob_samp', tgt: 'comp_sampling', rel: 'PREREQUISITE' },
     { id: 'edge_3', src: 'comp_sampling', tgt: 'comp_strat_samp', rel: 'PREREQUISITE' },
@@ -104,24 +109,20 @@ export function seedDatabase() {
     { id: 'edge_5', src: 'comp_sampling', tgt: 'comp_survey_meth', rel: 'PREREQUISITE' },
     { id: 'edge_6', src: 'comp_quest_des', tgt: 'comp_survey_meth', rel: 'PREREQUISITE' },
 
-    // Data Quality prerequisite chain
     { id: 'edge_7', src: 'comp_data_val', tgt: 'comp_missing_val', rel: 'PREREQUISITE' },
     { id: 'edge_8', src: 'comp_missing_val', tgt: 'comp_outlier_det', rel: 'PREREQUISITE' },
     { id: 'edge_9', src: 'comp_missing_val', tgt: 'comp_data_qual', rel: 'PREREQUISITE' },
     { id: 'edge_10', src: 'comp_outlier_det', tgt: 'comp_data_qual', rel: 'PREREQUISITE' },
 
-    // Price Statistics prerequisite chain
     { id: 'edge_11', src: 'comp_index_num', tgt: 'comp_cpi', rel: 'PREREQUISITE' },
     { id: 'edge_12', src: 'comp_index_num', tgt: 'comp_wpi', rel: 'PREREQUISITE' },
     { id: 'edge_13', src: 'comp_cpi', tgt: 'comp_price_stat', rel: 'PREREQUISITE' },
     { id: 'edge_14', src: 'comp_wpi', tgt: 'comp_price_stat', rel: 'PREREQUISITE' },
 
-    // National Accounts chain
     { id: 'edge_15', src: 'comp_gva', tgt: 'comp_gdp', rel: 'PREREQUISITE' },
     { id: 'edge_16', src: 'comp_gdp', tgt: 'comp_sna', rel: 'PREREQUISITE' },
     { id: 'edge_17', src: 'comp_sna', tgt: 'comp_nat_acc', rel: 'PREREQUISITE' },
 
-    // Technical
     { id: 'edge_18', src: 'comp_stat_comp', tgt: 'comp_data_viz', rel: 'PREREQUISITE' },
     { id: 'edge_19', src: 'comp_data_qual', tgt: 'comp_sdg_ind', rel: 'PREREQUISITE' }
   ];
@@ -189,126 +190,7 @@ export function seedDatabase() {
     28
   );
 
-  // 6. Seed Realistic Initial Mastery Scores with clear ROOT_GAP and AT_RISK propagation
-  const initialMastery = [
-    // Sampling Cascade (Root Gap: Probability Fundamentals 42% -> cascades AT_RISK to upstream)
-    { comp: 'comp_prob_fund', mastery: 42, conf: 'MEDIUM', evCount: 4, isRoot: 1, impact: 4 },
-    { comp: 'comp_prob_samp', mastery: 55, conf: 'MEDIUM', evCount: 3, isRoot: 0, impact: 3 },
-    { comp: 'comp_sampling', mastery: 58, conf: 'MEDIUM', evCount: 4, isRoot: 0, impact: 2 },
-    { comp: 'comp_strat_samp', mastery: 60, conf: 'LOW', evCount: 2, isRoot: 0, impact: 0 },
-    { comp: 'comp_cluster_samp', mastery: 52, conf: 'LOW', evCount: 1, isRoot: 0, impact: 0 },
-    { comp: 'comp_quest_des', mastery: 72, conf: 'MEDIUM', evCount: 4, isRoot: 0, impact: 1 },
-    { comp: 'comp_survey_meth', mastery: 67, conf: 'MEDIUM', evCount: 5, isRoot: 0, impact: 0 },
-
-    // Data Quality Cascade (Root Gap: Missing Value Treatment 35% -> cascades AT_RISK to Data Quality)
-    { comp: 'comp_data_val', mastery: 48, conf: 'LOW', evCount: 2, isRoot: 0, impact: 3 },
-    { comp: 'comp_missing_val', mastery: 35, conf: 'MEDIUM', evCount: 3, isRoot: 1, impact: 2 },
-    { comp: 'comp_outlier_det', mastery: 50, conf: 'LOW', evCount: 2, isRoot: 0, impact: 1 },
-    { comp: 'comp_data_qual', mastery: 43, conf: 'MEDIUM', evCount: 4, isRoot: 0, impact: 1 },
-
-    // Price Statistics
-    { comp: 'comp_index_num', mastery: 62, conf: 'MEDIUM', evCount: 4, isRoot: 0, impact: 2 },
-    { comp: 'comp_cpi', mastery: 65, conf: 'MEDIUM', evCount: 3, isRoot: 0, impact: 1 },
-    { comp: 'comp_wpi', mastery: 74, conf: 'HIGH', evCount: 8, isRoot: 0, impact: 1 },
-    { comp: 'comp_price_stat', mastery: 70, conf: 'MEDIUM', evCount: 5, isRoot: 0, impact: 0 },
-
-    // National Accounts
-    { comp: 'comp_gva', mastery: 78, conf: 'HIGH', evCount: 8, isRoot: 0, impact: 2 },
-    { comp: 'comp_gdp', mastery: 82, conf: 'HIGH', evCount: 9, isRoot: 0, impact: 1 },
-    { comp: 'comp_sna', mastery: 75, conf: 'MEDIUM', evCount: 6, isRoot: 0, impact: 1 },
-    { comp: 'comp_nat_acc', mastery: 79, conf: 'HIGH', evCount: 8, isRoot: 0, impact: 0 },
-
-    // Domain & Tech
-    { comp: 'comp_labour_stat', mastery: 71, conf: 'MEDIUM', evCount: 4, isRoot: 0, impact: 0 },
-    { comp: 'comp_agri_stat', mastery: 68, conf: 'MEDIUM', evCount: 3, isRoot: 0, impact: 0 },
-    { comp: 'comp_sdg_ind', mastery: 64, conf: 'LOW', evCount: 2, isRoot: 0, impact: 0 },
-    { comp: 'comp_stat_comp', mastery: 76, conf: 'HIGH', evCount: 8, isRoot: 0, impact: 1 },
-    { comp: 'comp_data_viz', mastery: 58, conf: 'MEDIUM', evCount: 3, isRoot: 0, impact: 0 },
-    { comp: 'comp_official_stat', mastery: 74, conf: 'HIGH', evCount: 10, isRoot: 0, impact: 0 }
-  ];
-
-  const insertMst = db.prepare(`
-    INSERT INTO mastery_scores (id, user_id, competency_id, mastery, confidence, evidence_count, is_root_gap, downstream_impact_count)
-    VALUES (?, 'usr_ananya_sharma', ?, ?, ?, ?, ?, ?)
-  `);
-  initialMastery.forEach((m, idx) => {
-    insertMst.run(`mst_init_${idx+1}`, m.comp, m.mastery, m.conf, m.evCount, m.isRoot, m.impact);
-  });
-
-  // 7. Seed Courses (iGOT Karmayogi & NSSTA)
-  const courses = [
-    {
-      id: 'crs_igot_prob',
-      title: 'Foundations of Probability & Sampling Distributions in Official Surveys',
-      provider: 'iGOT Karmayogi',
-      description: 'Comprehensive online course covering probability axioms, expectation, variance, and simple random sampling fundamentals for official statisticians.',
-      duration_hours: 6.0,
-      url: 'https://igotkarmayogi.gov.in/courses/prob-sampling-foundations',
-      level: 'Foundation',
-      comp_id: 'comp_prob_fund',
-      target_mastery: 85
-    },
-    {
-      id: 'crs_nssta_sampling',
-      title: 'Advanced Survey Methodology & Complex Sampling Designs',
-      provider: 'NSSTA',
-      description: 'Classroom & hybrid immersive program by NSSTA focusing on multi-stage stratified sampling, cluster design, and weight calibration.',
-      duration_hours: 18.0,
-      url: 'https://nssta.gov.in/programs/advanced-survey-methodology',
-      level: 'Advanced',
-      comp_id: 'comp_sampling',
-      target_mastery: 80
-    },
-    {
-      id: 'crs_igot_data_qual',
-      title: 'Data Quality Assurance, Imputation & Missing Value Treatment',
-      provider: 'iGOT Karmayogi',
-      description: 'Practical training on statistical imputation rules, hot-deck donor matching, cold-deck analysis, and validation protocols under MoSPI guidelines.',
-      duration_hours: 8.0,
-      url: 'https://igotkarmayogi.gov.in/courses/data-quality-imputation',
-      level: 'Intermediate',
-      comp_id: 'comp_missing_val',
-      target_mastery: 85
-    },
-    {
-      id: 'crs_nssta_price',
-      title: 'Index Numbers Theory and Practical Compilation of CPI / WPI',
-      provider: 'NSSTA',
-      description: 'Specialized academy module on Laspeyres index formulation, item substitution, base year revisions, and price quote consistency checks.',
-      duration_hours: 12.0,
-      url: 'https://nssta.gov.in/programs/price-index-compilation',
-      level: 'Specialist',
-      comp_id: 'comp_index_num',
-      target_mastery: 85
-    },
-    {
-      id: 'crs_igot_python',
-      title: 'Statistical Computing & Price Analytics in Python and R',
-      provider: 'iGOT Karmayogi',
-      description: 'Hands-on programming course for automating price data ingestion, index calculation, outlier identification, and dashboard generation.',
-      duration_hours: 10.0,
-      url: 'https://igotkarmayogi.gov.in/courses/statistical-computing-python',
-      level: 'Intermediate',
-      comp_id: 'comp_stat_comp',
-      target_mastery: 80
-    }
-  ];
-
-  const insertCourse = db.prepare(`
-    INSERT INTO courses (id, title, provider, description, duration_hours, url, level)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-  `);
-  const insertCourseComp = db.prepare(`
-    INSERT INTO course_competencies (id, course_id, competency_id, target_mastery)
-    VALUES (?, ?, ?, ?)
-  `);
-
-  courses.forEach((c, idx) => {
-    insertCourse.run(c.id, c.title, c.provider, c.description, c.duration_hours, c.url, c.level);
-    insertCourseComp.run(`cc_${idx+1}`, c.id, c.comp_id, c.target_mastery);
-  });
-
-  // 8. Documents & Chunks
+  // 6. Documents & Chunks (BEFORE Questions!)
   db.prepare(`
     INSERT INTO documents (id, title, domain, file_type, file_path)
     VALUES (?, ?, ?, ?, ?)
@@ -356,95 +238,26 @@ export function seedDatabase() {
   `);
   chunks.forEach(chk => insertChunk.run(chk.id, chk.doc_id, chk.page, chk.idx, chk.heading, chk.content, chk.comp_id));
 
-  // 9. Questions (Diagnostic & Backtrace)
-  const questions = [
-    {
-      id: 'q_diag_1',
-      text: 'In simple random sampling without replacement (SRSWOR) from a finite population of size N with sample size n, what is the probability of any specific unit being included in the sample?',
-      options: ['n / N', '1 / N', 'n / (N - 1)', '(N - n) / N'],
-      correct: 'n / N',
-      explanation: 'Under SRSWOR, the first-order inclusion probability (pi_i) for each population unit is identically equal to n / N.',
-      comp_id: 'comp_prob_fund',
-      diff: 'MEDIUM',
-      bloom: 'UNDERSTAND',
-      doc_id: null,
-      page: null,
-      chunk_id: null
-    },
-    {
-      id: 'q_diag_2',
-      text: 'When calculating the variance of a stratified sample estimator, why is stratification most effective when units within each stratum are homogeneous while variation between strata is large?',
-      options: [
-        'It minimizes the within-stratum variance component which dominates total sampling variance',
-        'It eliminates the need for calculating sampling weights entirely',
-        'It converts stratified sampling into non-probability quota sampling',
-        'It ensures zero non-sampling errors during field enumeration'
-      ],
-      correct: 'It minimizes the within-stratum variance component which dominates total sampling variance',
-      explanation: 'Stratification variance depends solely on within-stratum variance. Homogeneity within strata directly minimizes overall estimator variance.',
-      comp_id: 'comp_sampling',
-      diff: 'HARD',
-      bloom: 'ANALYZE',
-      doc_id: null,
-      page: null,
-      chunk_id: null
-    },
-    {
-      id: 'q_diag_3',
-      text: 'Which index number formula uses base-period quantities as fixed weights and is conventionally used in the compilation of Consumer Price Indices (CPI)?',
-      options: [
-        'Laspeyres Price Index Formula',
-        'Paasche Price Index Formula',
-        'Fisher Ideal Index Formula',
-        'Marshall-Edgeworth Formula'
-      ],
-      correct: 'Laspeyres Price Index Formula',
-      explanation: 'Laspeyres index keeps base-period expenditure weights constant, making it computationally practical for monthly CPI production without requiring current-period basket surveys.',
-      comp_id: 'comp_index_num',
-      diff: 'MEDIUM',
-      bloom: 'REMEMBER',
-      doc_id: null,
-      page: null,
-      chunk_id: null
-    },
-    {
-      id: 'q_diag_4',
-      text: 'In Python statistical computing, which vectorized library function is best suited for computing moving standard deviations and flagging price anomalies across thousands of time-series quotes?',
-      options: [
-        'pandas.Series.rolling().std() and z-score filtering',
-        'math.sqrt() inside a nested double Python for-loop',
-        'sys.stdout.write() with string concatenation',
-        'json.dumps() with regex matching'
-      ],
-      correct: 'pandas.Series.rolling().std() and z-score filtering',
-      explanation: 'Pandas vectorized rolling window functions provide O(N) performance for time-series anomaly detection in official price records.',
-      comp_id: 'comp_stat_comp',
-      diff: 'EASY',
-      bloom: 'APPLY',
-      doc_id: null,
-      page: null,
-      chunk_id: null
-    },
-    {
-      id: 'q_diag_5',
-      text: 'When visualizing price index trends across 28 States and 8 Union Territories for policy makers, which visual representation best communicates disparity while preventing chart clutter?',
-      options: [
-        'Choropleth thematic map paired with a sorted horizontal bar distribution',
-        'A 36-slice 3D pie chart with exploded segments',
-        'A single dense line chart with 36 unlabelled overlapping lines',
-        'A radar chart with 36 radial axes'
-      ],
-      correct: 'Choropleth thematic map paired with a sorted horizontal bar distribution',
-      explanation: 'Choropleth maps provide intuitive geographic context while sorted horizontal bar charts facilitate clear rank-order comparisons.',
-      comp_id: 'comp_data_viz',
-      diff: 'EASY',
-      bloom: 'EVALUATE',
-      doc_id: null,
-      page: null,
-      chunk_id: null
-    },
+  // 7. Seed Diagnostic & Backtrace Questions
+  const questionsJsonPath = path.join(__dirname, 'diagnostic_questions.json');
+  const diagnosticQuestions = JSON.parse(fs.readFileSync(questionsJsonPath, 'utf8'));
 
-    // Source Backtrace Questions (Linked to Data Quality Manual Page 27!)
+  const insertQ = db.prepare(`
+    INSERT INTO questions (
+      id, question_text, question_type, options, correct_answer, explanation,
+      competency_id, difficulty, bloom_level, source_document_id, source_page,
+      source_chunk_id, critic_score, status
+    ) VALUES (?, ?, 'MCQ', ?, ?, ?, ?, ?, ?, ?, ?, ?, 0.95, 'APPROVED')
+  `);
+
+  diagnosticQuestions.forEach(q => {
+    insertQ.run(
+      q.id, q.text, JSON.stringify(q.options), q.correct, q.explanation,
+      q.comp_id, q.diff, q.bloom, null, null, null
+    );
+  });
+
+  const backtraceQuestions = [
     {
       id: 'q_backtrace_1',
       text: "According to MoSPI Data Quality guidelines on Missing Value Treatment, what is the mandatory standard procedure when a monthly commodity price quote is missing in a survey round?",
@@ -483,22 +296,141 @@ export function seedDatabase() {
     }
   ];
 
-  const insertQ = db.prepare(`
-    INSERT INTO questions (
-      id, question_text, question_type, options, correct_answer, explanation,
-      competency_id, difficulty, bloom_level, source_document_id, source_page,
-      source_chunk_id, critic_score, status
-    ) VALUES (?, ?, 'MCQ', ?, ?, ?, ?, ?, ?, ?, ?, ?, 0.95, 'APPROVED')
-  `);
-
-  questions.forEach(q => {
+  backtraceQuestions.forEach(q => {
     insertQ.run(
       q.id, q.text, JSON.stringify(q.options), q.correct, q.explanation,
       q.comp_id, q.diff, q.bloom, q.doc_id, q.page, q.chunk_id
     );
   });
 
-  // 10. Seed Badges & Missions
+  // 8. Seed Initial Evidence (Diagnostic, Quiz, Practical)
+  const initialEvidence = [
+    { comp: 'comp_prob_fund', type: 'DIAGNOSTIC', score: 40, weight: 1.0, diff: 'MEDIUM' },
+    { comp: 'comp_prob_fund', type: 'QUIZ', score: 44, weight: 1.1, diff: 'HARD' },
+    { comp: 'comp_prob_samp', type: 'DIAGNOSTIC', score: 55, weight: 1.0, diff: 'MEDIUM' },
+    { comp: 'comp_sampling', type: 'DIAGNOSTIC', score: 58, weight: 1.0, diff: 'HARD' },
+    { comp: 'comp_data_val', type: 'DIAGNOSTIC', score: 48, weight: 1.0, diff: 'MEDIUM' },
+    { comp: 'comp_missing_val', type: 'DIAGNOSTIC', score: 35, weight: 1.0, diff: 'HARD' },
+    { comp: 'comp_data_qual', type: 'DIAGNOSTIC', score: 40, weight: 1.0, diff: 'MEDIUM' },
+    { comp: 'comp_data_qual', type: 'QUIZ', score: 46, weight: 1.1, diff: 'HARD' },
+    { comp: 'comp_index_num', type: 'DIAGNOSTIC', score: 62, weight: 1.0, diff: 'HARD' },
+    { comp: 'comp_cpi', type: 'DIAGNOSTIC', score: 65, weight: 1.0, diff: 'MEDIUM' },
+    { comp: 'comp_stat_comp', type: 'DIAGNOSTIC', score: 76, weight: 1.0, diff: 'EASY' },
+    { comp: 'comp_data_viz', type: 'DIAGNOSTIC', score: 58, weight: 1.0, diff: 'EASY' }
+  ];
+
+  const insertEv = db.prepare(`
+    INSERT INTO evidence (id, user_id, competency_id, evidence_type, score, weight, difficulty)
+    VALUES (?, 'usr_ananya_sharma', ?, ?, ?, ?, ?)
+  `);
+  initialEvidence.forEach((ev, idx) => {
+    insertEv.run(`ev_init_${idx+1}`, ev.comp, ev.type, ev.score, ev.weight, ev.diff);
+  });
+
+  // 9. Seed Mastery Scores
+  const initialMastery = [
+    { comp: 'comp_prob_fund', mastery: 42, conf: 'MEDIUM', evCount: 2, isRoot: 1, impact: 4 },
+    { comp: 'comp_prob_samp', mastery: 55, conf: 'LOW', evCount: 1, isRoot: 0, impact: 3 },
+    { comp: 'comp_sampling', mastery: 58, conf: 'LOW', evCount: 1, isRoot: 0, impact: 2 },
+    { comp: 'comp_strat_samp', mastery: 60, conf: 'LOW', evCount: 1, isRoot: 0, impact: 0 },
+    { comp: 'comp_cluster_samp', mastery: 52, conf: 'LOW', evCount: 1, isRoot: 0, impact: 0 },
+    { comp: 'comp_quest_des', mastery: 72, conf: 'LOW', evCount: 1, isRoot: 0, impact: 1 },
+    { comp: 'comp_survey_meth', mastery: 67, conf: 'LOW', evCount: 1, isRoot: 0, impact: 0 },
+
+    { comp: 'comp_data_val', mastery: 48, conf: 'LOW', evCount: 1, isRoot: 0, impact: 3 },
+    { comp: 'comp_missing_val', mastery: 35, conf: 'LOW', evCount: 1, isRoot: 1, impact: 2 },
+    { comp: 'comp_outlier_det', mastery: 50, conf: 'LOW', evCount: 1, isRoot: 0, impact: 1 },
+    { comp: 'comp_data_qual', mastery: 43, conf: 'MEDIUM', evCount: 2, isRoot: 0, impact: 1 },
+
+    { comp: 'comp_index_num', mastery: 62, conf: 'LOW', evCount: 1, isRoot: 0, impact: 2 },
+    { comp: 'comp_cpi', mastery: 65, conf: 'LOW', evCount: 1, isRoot: 0, impact: 1 },
+    { comp: 'comp_wpi', mastery: 74, conf: 'HIGH', evCount: 8, isRoot: 0, impact: 1 },
+    { comp: 'comp_price_stat', mastery: 70, conf: 'MEDIUM', evCount: 4, isRoot: 0, impact: 0 },
+
+    { comp: 'comp_gva', mastery: 78, conf: 'HIGH', evCount: 8, isRoot: 0, impact: 2 },
+    { comp: 'comp_gdp', mastery: 82, conf: 'HIGH', evCount: 9, isRoot: 0, impact: 1 },
+    { comp: 'comp_sna', mastery: 75, conf: 'MEDIUM', evCount: 6, isRoot: 0, impact: 1 },
+    { comp: 'comp_nat_acc', mastery: 79, conf: 'HIGH', evCount: 8, isRoot: 0, impact: 0 },
+
+    { comp: 'comp_labour_stat', mastery: 71, conf: 'MEDIUM', evCount: 4, isRoot: 0, impact: 0 },
+    { comp: 'comp_agri_stat', mastery: 68, conf: 'MEDIUM', evCount: 3, isRoot: 0, impact: 0 },
+    { comp: 'comp_sdg_ind', mastery: 64, conf: 'LOW', evCount: 2, isRoot: 0, impact: 0 },
+    { comp: 'comp_stat_comp', mastery: 76, conf: 'HIGH', evCount: 8, isRoot: 0, impact: 1 },
+    { comp: 'comp_data_viz', mastery: 58, conf: 'MEDIUM', evCount: 3, isRoot: 0, impact: 0 },
+    { comp: 'comp_official_stat', mastery: 74, conf: 'HIGH', evCount: 10, isRoot: 0, impact: 0 }
+  ];
+
+  const insertMst = db.prepare(`
+    INSERT INTO mastery_scores (id, user_id, competency_id, mastery, confidence, evidence_count, is_root_gap, downstream_impact_count)
+    VALUES (?, 'usr_ananya_sharma', ?, ?, ?, ?, ?, ?)
+  `);
+  initialMastery.forEach((m, idx) => {
+    insertMst.run(`mst_init_${idx+1}`, m.comp, m.mastery, m.conf, m.evCount, m.isRoot, m.impact);
+  });
+
+  // 10. Courses
+  const courses = [
+    {
+      id: 'crs_igot_prob',
+      title: 'Foundations of Probability & Sampling Distributions in Official Surveys',
+      provider: 'iGOT Karmayogi',
+      description: 'Comprehensive online course covering probability axioms, expectation, variance, and simple random sampling fundamentals for official statisticians.',
+      duration_hours: 6.0,
+      url: 'https://igotkarmayogi.gov.in/courses/prob-sampling-foundations',
+      level: 'Foundation',
+      comp_id: 'comp_prob_fund',
+      target_mastery: 85
+    },
+    {
+      id: 'crs_nssta_sampling',
+      title: 'Advanced Survey Methodology & Complex Sampling Designs',
+      provider: 'NSSTA',
+      description: 'Classroom & hybrid immersive program by NSSTA focusing on multi-stage stratified sampling, cluster design, and weight calibration.',
+      duration_hours: 18.0,
+      url: 'https://nssta.gov.in/programs/advanced-survey-methodology',
+      level: 'Advanced',
+      comp_id: 'comp_sampling',
+      target_mastery: 80
+    },
+    {
+      id: 'crs_igot_data_qual',
+      title: 'Data Quality Assurance, Imputation & Missing Value Treatment',
+      provider: 'iGOT Karmayogi',
+      description: 'Practical training on statistical imputation rules, hot-deck donor matching, cold-deck analysis, and validation protocols under MoSPI guidelines.',
+      duration_hours: 8.0,
+      url: 'https://igotkarmayogi.gov.in/courses/data-quality-imputation',
+      level: 'Intermediate',
+      comp_id: 'comp_missing_val',
+      target_mastery: 85
+    },
+    {
+      id: 'crs_nssta_price',
+      title: 'Index Numbers Theory and Practical Compilation of CPI / WPI',
+      provider: 'NSSTA',
+      description: 'Specialized academy module on Laspeyres index formulation, item substitution, base year revisions, and price quote consistency checks.',
+      duration_hours: 12.0,
+      url: 'https://nssta.gov.in/programs/price-index-compilation',
+      level: 'Specialist',
+      comp_id: 'comp_index_num',
+      target_mastery: 85
+    }
+  ];
+
+  const insertCourse = db.prepare(`
+    INSERT INTO courses (id, title, provider, description, duration_hours, url, level)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `);
+  const insertCourseComp = db.prepare(`
+    INSERT INTO course_competencies (id, course_id, competency_id, target_mastery)
+    VALUES (?, ?, ?, ?)
+  `);
+
+  courses.forEach((c, idx) => {
+    insertCourse.run(c.id, c.title, c.provider, c.description, c.duration_hours, c.url, c.level);
+    insertCourseComp.run(`cc_${idx+1}`, c.id, c.comp_id, c.target_mastery);
+  });
+
+  // 11. Badges & Missions
   const badges = [
     {
       id: 'bdg_diag',
@@ -525,28 +457,12 @@ export function seedDatabase() {
       criteria: 'Achieve >= 60% mastery in Data Quality'
     },
     {
-      id: 'bdg_quiz',
-      code: 'QUIZ_MASTER',
-      name: 'Assessment Ace',
-      description: 'Successfully completed verified AI assessments.',
-      icon: 'Award',
-      criteria: 'Complete at least 1 verified assessment'
-    },
-    {
       id: 'bdg_streak',
       code: 'CONSISTENCY_CHAMPION',
       name: 'Consistency Champion',
       description: 'Maintained an active continuous learning streak for 7 consecutive days.',
       icon: 'Flame',
       criteria: 'Maintain a 7-day learning streak'
-    },
-    {
-      id: 'bdg_specialist',
-      code: 'SPECIALIST_ACHIEVER',
-      name: 'MoSPI Specialist',
-      description: 'Reached Level 4 Specialist tier with over 3,000 XP.',
-      icon: 'Zap',
-      criteria: 'Reach 3,000 XP in Official Statistics'
     }
   ];
 
@@ -569,16 +485,6 @@ export function seedDatabase() {
       badge_reward_id: 'bdg_data_qual',
       target_type: 'PASS_QUIZ',
       target_value: 'comp_missing_val'
-    },
-    {
-      id: 'msn_prob',
-      name: 'Bridge Probability Fundamentals Gap',
-      description: 'Complete the iGOT course on Probability Axioms to unblock Sampling & Survey Design.',
-      competency_id: 'comp_prob_fund',
-      xp_reward: 200,
-      badge_reward_id: 'bdg_sampling',
-      target_type: 'COMPLETE_COURSE',
-      target_value: 'crs_igot_prob'
     }
   ];
 
@@ -589,9 +495,8 @@ export function seedDatabase() {
   missions.forEach(m => insertMission.run(m.id, m.name, m.description, m.competency_id, m.xp_reward, m.badge_reward_id, m.target_type, m.target_value));
 
   db.prepare(`INSERT INTO mission_progress (id, user_id, mission_id, progress, status) VALUES ('mp_1', 'usr_ananya_sharma', 'msn_dq', 25, 'IN_PROGRESS')`).run();
-  db.prepare(`INSERT INTO mission_progress (id, user_id, mission_id, progress, status) VALUES ('mp_2', 'usr_ananya_sharma', 'msn_prob', 0, 'IN_PROGRESS')`).run();
 
-  console.log('Official Statistics taxonomy & seed completed successfully!');
+  console.log('Seed with 13 role-mapped diagnostic questions completed successfully!');
 }
 
 if (process.argv[1].endsWith('seed.js')) {
