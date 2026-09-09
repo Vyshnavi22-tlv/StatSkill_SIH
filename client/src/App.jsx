@@ -7,6 +7,7 @@ import DiagnosticPage from './pages/DiagnosticPage';
 import LearningAssessmentPage from './pages/LearningAssessmentPage';
 import GamificationPage from './pages/GamificationPage';
 import AdminAnalyticsPage from './pages/AdminAnalyticsPage';
+import MentorPage from './pages/MentorPage';
 import api from './services/api';
 
 export default function App() {
@@ -39,6 +40,7 @@ export default function App() {
           <Route path="/graph" element={<CompetencyGraphPage />} />
           <Route path="/diagnostic" element={<DiagnosticPage />} />
           <Route path="/learning" element={<LearningAssessmentPage />} />
+          <Route path="/mentor" element={<MentorPage />} />
           <Route path="/gamification" element={<GamificationPage />} />
           <Route path="/admin" element={<AdminAnalyticsPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />

@@ -13,6 +13,7 @@ import recommendationRoutes from './routes/recommendations.js';
 import documentRoutes from './routes/documents.js';
 import gamificationRoutes from './routes/gamification.js';
 import adminRoutes from './routes/admin.js';
+import mentorRoutes from './routes/mentor.js';
 
 dotenv.config();
 
@@ -37,6 +38,7 @@ app.use('/api/recommendations', recommendationRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/gamification', gamificationRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/mentor', mentorRoutes);
 
 // Mock External Provider Adapters (iGOT Karmayogi & NSSTA)
 app.get('/api/providers/igot/status', (req, res) => {

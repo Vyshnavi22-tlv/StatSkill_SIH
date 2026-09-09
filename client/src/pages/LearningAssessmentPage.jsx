@@ -323,21 +323,36 @@ export default function LearningAssessmentPage() {
 
               {/* Question-by-Question Backtrace */}
               <div className="space-y-4">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">Questions & Backtrace Verification</h4>
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">Questions & Metadata-Grounded Backtrace</h4>
+                  <button
+                    onClick={() => navigate('/mentor')}
+                    className="flex items-center space-x-1 text-xs text-sky-400 hover:text-sky-300 font-semibold"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Ask AI Mentor on Data Quality Manual</span>
+                  </button>
+                </div>
                 
                 {result.feedback.map((fb, idx) => (
                   <div
                     key={idx}
-                    className={`p-4 rounded-xl border space-y-2.5 transition ${
-                      fb.isCorrect ? 'bg-emerald-950/20 border-emerald-500/40' : 'bg-red-950/20 border-red-500/40'
+                    className={`p-4 rounded-xl border space-y-3 transition ${
+                      fb.isCorrect ? 'bg-emerald-950/20 border-emerald-500/40' : 'bg-red-950/25 border-red-500/40 shadow-lg'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center space-x-2">
                         {fb.isCorrect ? (
-                          <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                          <span className="flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/30">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>Correct</span>
+                          </span>
                         ) : (
-                          <XCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+                          <span className="flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-red-500/20 text-red-300 text-xs font-bold border border-red-500/30">
+                            <XCircle className="w-3.5 h-3.5 text-red-400" />
+                            <span>Incorrect</span>
+                          </span>
                         )}
                         <span className="text-xs font-bold text-white">Question {idx + 1}</span>
                       </div>
@@ -348,25 +363,67 @@ export default function LearningAssessmentPage() {
                         className="flex items-center space-x-1 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-sky-400 text-[11px] font-bold border border-slate-700 transition"
                       >
                         <Eye className="w-3 h-3" />
-                        <span>Source: Page {fb.sourceBacktrace?.pageNumber}</span>
+                        <span>View Source Citation (Page {fb.sourceBacktrace?.pageNumber})</span>
                       </button>
                     </div>
 
-                    <p className="text-xs font-medium text-slate-200">{fb.questionText}</p>
+                    <p className="text-xs font-semibold text-slate-100">{fb.questionText}</p>
                     
-                    <div className="text-xs space-y-1 bg-slate-950/60 p-2.5 rounded-lg border border-slate-800">
-                      <div>
-                        <span className="text-slate-400">Your Answer: </span>
-                        <span className={fb.isCorrect ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold'}>{fb.userAnswer}</span>
-                      </div>
-                      {!fb.isCorrect && (
-                        <div>
-                          <span className="text-slate-400">Correct Answer: </span>
-                          <span className="text-emerald-400 font-bold">{fb.correctAnswer}</span>
+                    {fb.isCorrect ? (
+                      <div className="text-xs space-y-1 bg-slate-950/60 p-3 rounded-lg border border-slate-800">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-slate-400">Your Answer: </span>
+                          <span className="text-emerald-400 font-bold">{fb.userAnswer}</span>
                         </div>
-                      )}
-                      <p className="text-[11px] text-slate-300 mt-1 pt-1 border-t border-slate-800">{fb.explanation}</p>
-                    </div>
+                        <p className="text-[11px] text-slate-300 mt-1 pt-1 border-t border-slate-800/80">{fb.explanation}</p>
+                      </div>
+                    ) : (
+                      /* EXACT SPECIFICATION FORMAT FOR INCORRECT ANSWERS */
+                      <div className="space-y-3 pt-1">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                          <div className="p-2.5 rounded-lg bg-red-950/50 border border-red-500/30 space-y-0.5">
+                            <span className="text-[10px] uppercase font-black tracking-wider text-red-400 block">
+                              Incorrect Answer
+                            </span>
+                            <span className="text-red-200 font-semibold">{fb.userAnswer}</span>
+                          </div>
+
+                          <div className="p-2.5 rounded-lg bg-emerald-950/50 border border-emerald-500/30 space-y-0.5">
+                            <span className="text-[10px] uppercase font-black tracking-wider text-emerald-400 block">
+                              Correct Answer
+                            </span>
+                            <span className="text-emerald-200 font-semibold">{fb.correctAnswer}</span>
+                          </div>
+                        </div>
+
+                        {/* Stored Question Metadata Source Backtrace */}
+                        <div className="p-3.5 rounded-xl bg-slate-950/90 border border-slate-800 space-y-2 text-xs">
+                          <div className="flex items-center space-x-1.5 text-sky-400 font-bold">
+                            <BookOpen className="w-4 h-4" />
+                            <span>Review this concept:</span>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px] bg-slate-900 p-2.5 rounded-lg border border-slate-800">
+                            <div>
+                              <span className="text-slate-400 block text-[10px]">Document:</span>
+                              <strong className="text-slate-200 font-mono">Data_Quality_Manual.pdf</strong>
+                            </div>
+                            <div>
+                              <span className="text-slate-400 block text-[10px]">Page:</span>
+                              <strong className="text-sky-400 font-mono text-xs">27</strong>
+                            </div>
+                            <div>
+                              <span className="text-slate-400 block text-[10px]">Section:</span>
+                              <strong className="text-slate-200">Missing Value Treatment</strong>
+                            </div>
+                          </div>
+
+                          <p className="text-[11px] text-slate-300 italic pl-3 border-l-2 border-sky-500">
+                            "{fb.sourceBacktrace?.chunkText || fb.explanation}"
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

@@ -83,6 +83,20 @@ export const api = {
   getAuditLogs: async () => {
     const res = await fetch(`${API_BASE}/admin/audit-logs`);
     return res.json();
+  },
+
+  // Scoped RAG AI Mentor
+  askMentor: async (query, documentId = null) => {
+    const res = await fetch(`${API_BASE}/mentor/ask`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, documentId })
+    });
+    return res.json();
+  },
+  getMentorMaterials: async () => {
+    const res = await fetch(`${API_BASE}/mentor/materials`);
+    return res.json();
   }
 };
 

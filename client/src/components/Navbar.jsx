@@ -10,7 +10,8 @@ import {
   ShieldAlert, 
   User, 
   Zap,
-  Layers
+  Layers,
+  BrainCircuit
 } from 'lucide-react';
 
 export default function Navbar({ user, gamification }) {
@@ -21,6 +22,7 @@ export default function Navbar({ user, gamification }) {
     { to: '/graph', label: 'Competency Graph', icon: Network, highlight: true },
     { to: '/diagnostic', label: 'Diagnostic', icon: CheckCircle2 },
     { to: '/learning', label: 'Learning & Assessment', icon: BookOpen },
+    { to: '/mentor', label: 'AI Mentor', icon: BrainCircuit },
     { to: '/gamification', label: 'Badges & Missions', icon: Award },
     { to: '/admin', label: 'Admin Analytics', icon: BarChart3 }
   ];
