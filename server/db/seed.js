@@ -190,7 +190,7 @@ export function seedDatabase() {
     28
   );
 
-  // 6. Documents & Chunks (BEFORE Questions!)
+  // 6. Documents & Chunks
   db.prepare(`
     INSERT INTO documents (id, title, domain, file_type, file_path)
     VALUES (?, ?, ?, ?, ?)
@@ -303,7 +303,7 @@ export function seedDatabase() {
     );
   });
 
-  // 8. Seed Initial Evidence (Diagnostic, Quiz, Practical)
+  // 8. Seed Initial Evidence
   const initialEvidence = [
     { comp: 'comp_prob_fund', type: 'DIAGNOSTIC', score: 40, weight: 1.0, diff: 'MEDIUM' },
     { comp: 'comp_prob_fund', type: 'QUIZ', score: 44, weight: 1.1, diff: 'HARD' },
@@ -430,15 +430,15 @@ export function seedDatabase() {
     insertCourseComp.run(`cc_${idx+1}`, c.id, c.comp_id, c.target_mastery);
   });
 
-  // 11. Badges & Missions
+  // 11. ALL 7 BADGES REQUIRED BY SPECIFICATION
   const badges = [
     {
       id: 'bdg_diag',
       code: 'DIAGNOSTIC_STARTER',
-      name: 'Diagnostic Explorer',
+      name: 'Diagnostic Starter',
       description: 'Completed the baseline competency diagnostic test.',
       icon: 'Compass',
-      criteria: 'Complete 1 official diagnostic assessment'
+      criteria: 'Complete 1 official baseline diagnostic'
     },
     {
       id: 'bdg_sampling',
@@ -446,7 +446,7 @@ export function seedDatabase() {
       name: 'Sampling Foundations',
       description: 'Mastered Probability Sampling and Sampling Theory fundamentals.',
       icon: 'GitBranch',
-      criteria: 'Achieve >= 65% mastery in Sampling competencies'
+      criteria: 'Achieve >= 60% mastery in Probability & Sampling'
     },
     {
       id: 'bdg_data_qual',
@@ -454,7 +454,31 @@ export function seedDatabase() {
       name: 'Data Quality Guardian',
       description: 'Demonstrated mastery in Data Validation and Missing Value Treatment.',
       icon: 'ShieldCheck',
-      criteria: 'Achieve >= 60% mastery in Data Quality'
+      criteria: 'Demonstrate >= 60% mastery in Data Quality'
+    },
+    {
+      id: 'bdg_survey_meth',
+      code: 'SURVEY_METHODOLOGIST',
+      name: 'Survey Methodologist',
+      description: 'Completed advanced survey methodology and sampling frame design.',
+      icon: 'Layers',
+      criteria: 'Achieve >= 65% mastery in Survey Methodology'
+    },
+    {
+      id: 'bdg_stat_comp',
+      code: 'STATISTICAL_COMPUTING',
+      name: 'Statistical Computing',
+      description: 'Demonstrated hands-on price data analysis in Python / R.',
+      icon: 'Cpu',
+      criteria: 'Achieve >= 70% mastery in Statistical Computing'
+    },
+    {
+      id: 'bdg_comp_master',
+      code: 'COMPETENCY_MASTER',
+      name: 'Competency Master',
+      description: 'Attained high mastery (>= 75%) across 3 or more official statistical competencies.',
+      icon: 'Award',
+      criteria: 'Master 3 or more competencies with >= 75% score'
     },
     {
       id: 'bdg_streak',
@@ -472,14 +496,26 @@ export function seedDatabase() {
   `);
   badges.forEach(b => insertBadge.run(b.id, b.code, b.name, b.description, b.icon, b.criteria));
 
+  // Seed unlocked badges for Ananya
   db.prepare(`INSERT INTO user_badges (id, user_id, badge_id, unlocked_at) VALUES ('ub_1', 'usr_ananya_sharma', 'bdg_diag', CURRENT_TIMESTAMP)`).run();
   db.prepare(`INSERT INTO user_badges (id, user_id, badge_id, unlocked_at) VALUES ('ub_2', 'usr_ananya_sharma', 'bdg_streak', CURRENT_TIMESTAMP)`).run();
 
+  // 12. MISSIONS
   const missions = [
     {
-      id: 'msn_dq',
+      id: 'msn_sampling_des',
+      name: 'Master Sampling Design',
+      description: 'Complete the prerequisite chain: Probability Fundamentals → Probability Sampling → Stratified & Cluster Sampling → Final Assessment.',
+      competency_id: 'comp_sampling',
+      xp_reward: 500,
+      badge_reward_id: 'bdg_sampling',
+      target_type: 'COMPLETE_COURSE',
+      target_value: 'crs_nssta_sampling'
+    },
+    {
+      id: 'msn_missing_val',
       name: 'Master Missing Value Treatment',
-      description: 'Study Chapter 4 of MoSPI Data Quality Manual, pass the AI-generated assessment, and boost Missing Value Treatment mastery above 70%.',
+      description: 'Study Chapter 4 of MoSPI Data Quality Manual (Page 27), pass the AI-generated assessment, and boost Missing Value Treatment mastery above 70%.',
       competency_id: 'comp_missing_val',
       xp_reward: 150,
       badge_reward_id: 'bdg_data_qual',
@@ -494,9 +530,10 @@ export function seedDatabase() {
   `);
   missions.forEach(m => insertMission.run(m.id, m.name, m.description, m.competency_id, m.xp_reward, m.badge_reward_id, m.target_type, m.target_value));
 
-  db.prepare(`INSERT INTO mission_progress (id, user_id, mission_id, progress, status) VALUES ('mp_1', 'usr_ananya_sharma', 'msn_dq', 25, 'IN_PROGRESS')`).run();
+  db.prepare(`INSERT INTO mission_progress (id, user_id, mission_id, progress, status) VALUES ('mp_1', 'usr_ananya_sharma', 'msn_missing_val', 25, 'IN_PROGRESS')`).run();
+  db.prepare(`INSERT INTO mission_progress (id, user_id, mission_id, progress, status) VALUES ('mp_2', 'usr_ananya_sharma', 'msn_sampling_des', 40, 'IN_PROGRESS')`).run();
 
-  console.log('Seed with 13 role-mapped diagnostic questions completed successfully!');
+  console.log('Seed with all 7 badges and multi-step missions completed successfully!');
 }
 
 if (process.argv[1].endsWith('seed.js')) {
