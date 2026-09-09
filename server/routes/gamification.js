@@ -51,7 +51,7 @@ router.get('/profile', (req, res) => {
     levelNumber: currentLevel.level,
     streak: user.streak,
     progressToNext,
-    currentTier,
+    currentTier: currentLevel,
     nextTier,
     unlockedBadges,
     allBadges,

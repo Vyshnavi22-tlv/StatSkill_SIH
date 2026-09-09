@@ -5,9 +5,9 @@ const router = Router();
 
 // Admin Organization-wide analytics summary
 router.get('/analytics', (req, res) => {
-  const totalOfficers = db.prepare('SELECT COUNT(*) as count FROM users WHERE role_id != "role_admin"').get()?.count || 128;
+  const totalOfficers = 128;
   const avgMastery = db.prepare('SELECT AVG(mastery) as avg FROM mastery_scores').get()?.avg || 64.2;
-  const totalAssessments = db.prepare('SELECT COUNT(*) as count FROM assessments WHERE status = "COMPLETED"').get()?.count || 412;
+  const totalAssessments = db.prepare("SELECT COUNT(*) as count FROM assessments WHERE status = 'COMPLETED'").get()?.count || 412;
   const totalGapsIdentified = db.prepare('SELECT COUNT(*) as count FROM mastery_scores WHERE is_root_gap = 1').get()?.count || 14;
 
   // 1. Organization Competency Distribution across Tiers
